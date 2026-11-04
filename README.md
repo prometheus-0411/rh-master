@@ -53,7 +53,7 @@ Puis cliquez sur **Deploy**. Au bout d'une à deux minutes, Vercel affiche l'adr
 
 ### 4. Base de données (retours et compteurs)
 
-**Étape obligatoire.** Sans base, les compteurs repartent de zéro à chaque redémarrage du serveur et les plafonds ne protègent plus votre budget : en ligne, l'app refuse donc toute analyse et tout retour tant que la base n'est pas connectée (message « L'app n'est pas encore prête »). En local, elle fonctionne sans base pour les essais.
+**Étape obligatoire.** Sans base, les compteurs repartent de zéro à chaque redémarrage du serveur et les plafonds ne protègent plus votre budget : en ligne, l'app refuse donc toute analyse et tout retour tant que la base n'est pas connectée (message « L'app n'est pas encore prête »). En local, `npm run dev` fonctionne sans base pour les essais (ou `AUTORISER_SANS_BASE=1` avec `npm start`).
 
 1. Dans le projet Vercel : **Storage → Create Database → Upstash for Redis** (offre gratuite), région Europe (Frankfurt ou Paris).
 2. **Connect Project** : choisissez `rh-master`. Vercel ajoute seul `KV_REST_API_URL` et `KV_REST_API_TOKEN`.

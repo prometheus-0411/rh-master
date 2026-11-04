@@ -66,9 +66,13 @@ export default function App() {
       if (err?.where === "acces" || err?.code === "code_requis") setErr(null);
       if (!silencieux) notifier("Code accepté");
     } catch (e) {
-      memoriserCode("");
-      setCode("");
-      if (!silencieux) setErr({ where: "acces", code: (e as ErreurAppel).code });
+      const ce = (e as ErreurAppel).code;
+      // On n'oublie le code que s'il est refusé ; une panne passagère ne doit pas obliger à le ressaisir.
+      if (ce === "code_invalide" || ce === "code_requis") {
+        memoriserCode("");
+        setCode("");
+      }
+      if (!silencieux) setErr({ where: "acces", code: ce });
     }
   }
 
