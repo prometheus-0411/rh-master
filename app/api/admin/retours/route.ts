@@ -25,7 +25,7 @@ export async function GET(req: Request) {
       retours,
       codes,
       aujourdhui: await s.get(`jour:${jourCourant()}`),
-      limiteJour: Number(process.env.LIMITE_JOUR) || 150,
+      limiteJour: Number(process.env.LIMITE_JOUR) || 30,
       persistant: storePersistant(),
     });
   } catch (e) {

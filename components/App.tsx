@@ -457,9 +457,10 @@ function EtapeDossier(p: {
         </div>
       </div>
       <p className="privacy">
-        Votre CV n&apos;est jamais enregistré. Un PDF est lu directement dans votre navigateur ; au lancement de l&apos;analyse, le texte est transmis à Claude
-        (Anthropic) le temps de la réponse, sans être conservé par RH Master. Il disparaît quand vous fermez la page. Seul le retour que vous choisissez
-        d&apos;envoyer à l&apos;étape 5 est conservé, sans votre CV.
+        RH Master n&apos;enregistre jamais votre CV. Un PDF est lu directement dans votre navigateur ; au lancement de l&apos;analyse, le texte du CV et de
+        l&apos;offre est envoyé à Claude, le service d&apos;IA d&apos;Anthropic, qui ne s&apos;en sert pas pour entraîner ses modèles et peut le conserver
+        jusqu&apos;à 30 jours selon ses conditions. Vous pouvez retirer votre nom et vos coordonnées avant de lancer l&apos;analyse. Seul le retour que vous
+        choisissez d&apos;envoyer à l&apos;étape 5 est conservé, sans votre CV.
       </p>
       {p.erreur}
       <div className="actions">

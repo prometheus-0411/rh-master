@@ -55,7 +55,7 @@ export async function reserverAppel(code: string): Promise<{ restant: number; an
     await s.decr(kCode);
     throw new ErreurApi("quota_atteint", 429);
   }
-  const limiteJour = Number(process.env.LIMITE_JOUR) || 150;
+  const limiteJour = Number(process.env.LIMITE_JOUR) || 30;
   const j = await s.incr(kJour, 60 * 60 * 48);
   if (j > limiteJour) {
     await s.decr(kJour);

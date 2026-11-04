@@ -43,7 +43,7 @@ Dans *Environment Variables* (ou plus tard : *Settings → Environment Variables
 | `ANTHROPIC_API_KEY` | votre clé `sk-ant-…` | Obligatoire |
 | `ACCES_CODES` | `CODE1:20,CODE2:20` (voir « Choisir les codes » ci-dessous) | Codes testeurs et leur nombre d'appels autorisés |
 | `ADMIN_CODE` | un mot de passe long, à vous | Ouvre la page `/admin` |
-| `LIMITE_JOUR` | ex. `150` | Plafond global d'appels par jour (protège votre budget) |
+| `LIMITE_JOUR` | `30` pendant les tests | Plafond global d'appels par jour, tous testeurs confondus (protège votre budget ; 30 appels ≈ 5 à 10 $ au maximum avec Opus) |
 
 Facultatifs : `LIMITE_PAR_CODE` (limite par défaut d'un code écrit sans `:20`), `ANTHROPIC_MODEL` (par défaut `claude-opus-5-5`), `ANTHROPIC_EFFORT` (par défaut `high` ; `medium` est plus rapide et moins cher).
 
@@ -85,10 +85,13 @@ Si l'app affiche « L'app n'est pas encore configurée côté serveur », ouvrez
 
 **Modifier ce que dit Claude** : les consignes sont dans le dossier [`prompts/`](prompts/), en français. Modifiez-les sur GitHub (icône crayon) ; Vercel redéploie automatiquement. Lisez d'abord [`prompts/README.md`](prompts/README.md).
 
-**Coût indicatif** (tarifs de novembre 2026, à vérifier dans la console Anthropic) :
-- lecture recruteur : environ 0,05 à 0,15 € ;
-- valeur marché + négociation : environ 0,05 à 0,15 € sans recherche web, 0,15 à 0,40 € avec ;
-- donc **0,10 à 0,55 € par dossier complet**. Un plafond de 20 appels par code correspond à 4 à 6 dossiers.
+**Coût indicatif** (estimations de novembre 2026 avec Opus 5.5 en effort élevé, à vérifier dans la console Anthropic dès les premiers dossiers ; la réflexion de Claude est facturée comme du texte produit et pèse le plus) :
+- lecture recruteur : environ 0,15 à 0,25 $ ;
+- valeur marché + négociation : environ 0,15 à 0,25 $ sans recherche web, 0,30 à 0,70 $ avec ;
+- lecture d'un lien d'offre : environ 0,05 à 0,15 $ ;
+- donc **0,30 à 1 $ par dossier complet**. Un plafond de 20 appels par code correspond à 6 à 10 dossiers, soit 3 à 7 $ au maximum par testeur.
+
+Pour diviser ce coût par 4 à 5 : `ANTHROPIC_MODEL=claude-sonnet-5-5` et `ANTHROPIC_EFFORT=medium` (analyse un peu moins fine). Réglez dans tous les cas une **limite de dépense mensuelle** dans la console Anthropic.
 
 Un « appel » décompté = une lecture recruteur, une estimation marché (recherche web comprise), une lecture de lien d'offre ou une retranscription de PDF scanné. Un appel qui échoue n'est pas décompté.
 
