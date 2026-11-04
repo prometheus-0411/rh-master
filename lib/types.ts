@@ -57,6 +57,8 @@ export type Etape = "lecture" | "marche" | "nego" | "synthese" | "";
 
 export interface Retour {
   note: number;
+  juste: number | null;
+  reco: "oui" | "non" | "";
   etape: Etape;
   manque: string;
   mode: "exemple" | "direct";
@@ -76,4 +78,5 @@ export type CodeErreur =
   | "offre_inaccessible"
   | "url_invalide"
   | "config"
+  | "base_absente"
   | "serveur";

@@ -41,17 +41,19 @@ Dans *Environment Variables* (ou plus tard : *Settings → Environment Variables
 | Nom | Valeur | Rôle |
 |---|---|---|
 | `ANTHROPIC_API_KEY` | votre clé `sk-ant-…` | Obligatoire |
-| `ACCES_CODES` | ex. `CAMILLE-4821:20,SOPHIE-7390:20` | Codes testeurs et leur nombre d'appels autorisés |
+| `ACCES_CODES` | `CODE1:20,CODE2:20` (voir « Choisir les codes » ci-dessous) | Codes testeurs et leur nombre d'appels autorisés |
 | `ADMIN_CODE` | un mot de passe long, à vous | Ouvre la page `/admin` |
 | `LIMITE_JOUR` | ex. `150` | Plafond global d'appels par jour (protège votre budget) |
 
 Facultatifs : `LIMITE_PAR_CODE` (limite par défaut d'un code écrit sans `:20`), `ANTHROPIC_MODEL` (par défaut `claude-opus-5-5`), `ANTHROPIC_EFFORT` (par défaut `high` ; `medium` est plus rapide et moins cher).
 
+**Choisir les codes.** Ce dépôt est public : n'utilisez jamais un code cité dans un exemple, l'app refuse d'ailleurs ceux de la documentation. Prenez un code par testeur, d'au moins 8 caractères aléatoires après le prénom (par exemple `PRENOM-` suivi de 8 lettres et chiffres tirés au hasard), et ne le publiez nulle part.
+
 Puis cliquez sur **Deploy**. Au bout d'une à deux minutes, Vercel affiche l'adresse de l'app (`https://rh-master-xxx.vercel.app`).
 
 ### 4. Base de données (retours et compteurs)
 
-Sans base, l'app fonctionne mais **oublie les retours et compteurs** à chaque redémarrage.
+**Étape obligatoire.** Sans base, les compteurs repartent de zéro à chaque redémarrage du serveur et les plafonds ne protègent plus votre budget : en ligne, l'app refuse donc toute analyse et tout retour tant que la base n'est pas connectée (message « L'app n'est pas encore prête »). En local, elle fonctionne sans base pour les essais.
 
 1. Dans le projet Vercel : **Storage → Create Database → Upstash for Redis** (offre gratuite), région Europe (Frankfurt ou Paris).
 2. **Connect Project** : choisissez `rh-master`. Vercel ajoute seul `KV_REST_API_URL` et `KV_REST_API_TOKEN`.
@@ -67,11 +69,19 @@ La page `/admin` affiche un bandeau orange tant que la base n'est pas connectée
 
 ---
 
+### Région du serveur
+
+Le fichier `vercel.json` place le serveur de l'app à Paris (`cdg1`) au lieu des États-Unis, région par défaut de Vercel : le CV transite par un serveur en Europe avant d'être envoyé à l'API Claude. Choisissez aussi une région européenne pour la base Upstash (étape 4).
+
+### En cas d'erreur au premier essai
+
+Si l'app affiche « L'app n'est pas encore configurée côté serveur », ouvrez dans Vercel **Deployments → (le dernier) → Logs** : la raison donnée par l'API Claude y est écrite (clé refusée, nom de modèle inconnu, réglage non accepté…). Le contenu du CV n'y figure jamais.
+
 ## Au quotidien
 
 **Ajouter un testeur** : ajoutez `NOUVEAU-CODE:20` à `ACCES_CODES` dans Vercel, puis *Redeploy*. Donnez un code par personne : son retour est rattaché à son code et un nouvel envoi remplace le précédent (RG-A06).
 
-**Lire les retours** : `https://…/admin`. Seuls la note, l'étape et le commentaire sont enregistrés, jamais le CV.
+**Lire les retours** : `https://…/admin`. Chaque retour contient l'utilité et la justesse du diagnostic (notes de 1 à 5), la recommandation à un proche, l'étape la plus utile et un commentaire ; jamais le CV. La page calcule les moyennes et le taux de recommandation, à comparer aux seuils du protocole de test.
 
 **Modifier ce que dit Claude** : les consignes sont dans le dossier [`prompts/`](prompts/), en français. Modifiez-les sur GitHub (icône crayon) ; Vercel redéploie automatiquement. Lisez d'abord [`prompts/README.md`](prompts/README.md).
 

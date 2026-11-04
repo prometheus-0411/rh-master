@@ -24,6 +24,8 @@ export function message(code: CodeErreur | string | undefined): string {
       return "Ce site ne laisse pas lire l'offre automatiquement (c'est souvent le cas de LinkedIn et Indeed). Copiez-collez son texte à la place.";
     case "url_invalide":
       return "Ce lien n'est pas valide. Collez l'adresse complète de l'offre, commençant par https://";
+    case "base_absente":
+      return "L'app n'est pas encore prête à recevoir des analyses. Prévenez le concepteur.";
     case "config":
       return "L'app n'est pas encore configurée côté serveur. Prévenez le concepteur.";
     case "reseau":

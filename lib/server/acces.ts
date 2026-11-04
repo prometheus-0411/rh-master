@@ -1,16 +1,31 @@
 // Codes d'invitation, plafond par code et plafond global par jour.
 import { timingSafeEqual } from "node:crypto";
-import { getStore } from "./store";
+import { getStore, storePersistant } from "./store";
 import { ErreurApi } from "./erreurs";
+
+// Codes cités en exemple dans la documentation publique : jamais acceptés, même s'ils sont recopiés dans ACCES_CODES.
+const CODES_PUBLICS = new Set(["CAMILLE-4821", "SOPHIE-7390", "EXEMPLE-A-REMPLACER"]);
 
 export function codesConfigures(): Map<string, number> {
   const defaut = Number(process.env.LIMITE_PAR_CODE) || 20;
   const m = new Map<string, number>();
   for (const brut of (process.env.ACCES_CODES ?? "").split(",")) {
     const [code, lim] = brut.trim().split(":");
-    if (code) m.set(code.trim().toUpperCase(), Number(lim) || defaut);
+    const c = (code ?? "").trim().toUpperCase();
+    if (c && !CODES_PUBLICS.has(c)) m.set(c, Number(lim) || defaut);
   }
   return m;
+}
+
+/**
+ * En ligne (Vercel), refuse tout appel tant que la base Upstash n'est pas connectée :
+ * sans elle, les compteurs repartent de zéro à chaque redémarrage et les plafonds ne protègent plus le budget.
+ */
+export function exigerBasePersistante() {
+  if (process.env.VERCEL && !storePersistant()) {
+    console.error("Base Upstash non connectée : appels refusés pour protéger le budget (README, étape 4).");
+    throw new ErreurApi("base_absente", 503);
+  }
 }
 
 export function lireCode(req: Request): string {
@@ -29,6 +44,7 @@ const jour = () => new Date().toISOString().slice(0, 10);
 /** Réserve un appel à Claude. Renvoie une fonction d'annulation à appeler si l'appel échoue. */
 export async function reserverAppel(code: string): Promise<{ restant: number; annuler: () => Promise<void> }> {
   const limite = verifierCode(code);
+  exigerBasePersistante();
   const s = getStore();
   const kCode = `usage:${code}`;
   const kJour = `jour:${jour()}`;
