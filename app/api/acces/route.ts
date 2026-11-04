@@ -1,10 +1,13 @@
 // Vérifie un code d'invitation et indique le nombre d'appels restants.
-import { lireCode, restant } from "@/lib/server/acces";
+import { exigerBasePersistante, lireCode, restant } from "@/lib/server/acces";
 import { reponseErreur } from "@/lib/server/erreurs";
 
 export async function POST(req: Request) {
   try {
-    return Response.json({ ok: true, restant: await restant(lireCode(req)) });
+    const code = lireCode(req);
+    const n = await restant(code);
+    exigerBasePersistante();
+    return Response.json({ ok: true, restant: n });
   } catch (e) {
     return reponseErreur(e);
   }

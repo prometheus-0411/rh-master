@@ -29,7 +29,7 @@ export function reponseErreur(e: unknown): Response {
     const r = raison(e);
     console.error("Requête refusée par l'API Claude :", e.status, r);
     // Seul un dépassement de taille relève de l'utilisateur ; tout autre refus est un réglage de l'app.
-    const tropLong = /too long|too many tokens|maximum context|context window|exceeds/i.test(r);
+    const tropLong = /prompt is too long|input is too long|too many input tokens/i.test(r);
     return Response.json({ erreur: tropLong ? "trop_long" : "config" }, { status: 400 });
   }
   if (e instanceof Anthropic.APIError) {

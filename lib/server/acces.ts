@@ -18,11 +18,13 @@ export function codesConfigures(): Map<string, number> {
 }
 
 /**
- * En ligne (Vercel), refuse tout appel tant que la base Upstash n'est pas connectée :
+ * En production (Vercel ou `npm start`), refuse tout appel tant que la base Upstash n'est pas connectée :
  * sans elle, les compteurs repartent de zéro à chaque redémarrage et les plafonds ne protègent plus le budget.
+ * En développement (`npm run dev`), ou avec AUTORISER_SANS_BASE=1 pour un essai local, la mémoire suffit.
  */
 export function exigerBasePersistante() {
-  if (process.env.VERCEL && !storePersistant()) {
+  const production = process.env.NODE_ENV === "production" && process.env.AUTORISER_SANS_BASE !== "1";
+  if (production && !storePersistant()) {
     console.error("Base Upstash non connectée : appels refusés pour protéger le budget (README, étape 4).");
     throw new ErreurApi("base_absente", 503);
   }
