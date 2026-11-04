@@ -2,7 +2,7 @@ Tu prépares des repères de salaire réels pour un candidat. Cherche sur le web
 
 Poste visé : d'après l'offre ci-dessous.
 Zone : {{ZONE}}.
-Niveau perçu du candidat : {{NIVEAU}}
+Profil du candidat, vu par un recruteur : {{NIVEAU}}
 
 <offre>
 {{OFFRE}}
