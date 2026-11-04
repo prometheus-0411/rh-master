@@ -143,7 +143,7 @@ export default function App() {
         <p className="err" role="alert">
           {message(err.code)}
         </p>
-        {retry && !["code_invalide", "quota_atteint", "limite_jour", "config", "code_requis"].includes(err.code) && (
+        {retry && !["code_invalide", "quota_atteint", "limite_jour", "config", "base_absente", "code_requis"].includes(err.code) && (
           <div className="actions">
             <button className="btn" type="button" onClick={retry}>
               Relancer
@@ -633,6 +633,8 @@ function LienOffre({ code, onTexte, onRestant }: { code: string; onTexte: (t: st
 
 function EtapeSynthese({ md, mode, code, notifier }: { md: string; mode: "exemple" | "direct"; code: string; notifier: (t: string) => void }) {
   const [note, setNote] = useState("");
+  const [juste, setJuste] = useState("");
+  const [reco, setReco] = useState("");
   const [etape, setEtape] = useState("");
   const [manque, setManque] = useState("");
   const [msg, setMsg] = useState("");
@@ -662,7 +664,7 @@ function EtapeSynthese({ md, mode, code, notifier }: { md: string; mode: "exempl
     if (!code) return setMsg("L'envoi demande votre code d'accès testeur : cliquez sur « Analyser mon dossier » en haut de page pour le saisir.");
     setEncours(true);
     try {
-      await appelApi("/api/retour", { note: Number(note), etape, manque, mode }, code);
+      await appelApi("/api/retour", { note: Number(note), juste: juste ? Number(juste) : null, reco, etape, manque, mode }, code);
       setEnvoye(true);
       notifier("Retour envoyé, merci");
     } catch (er) {
@@ -710,6 +712,15 @@ function EtapeSynthese({ md, mode, code, notifier }: { md: string; mode: "exempl
               <span className="count">1 = inutile · 5 = je m&apos;en servirais pour une vraie candidature</span>
             </fieldset>
             <fieldset>
+              <legend>Le diagnostic sur votre profil était-il juste ?</legend>
+              {radios("juste", juste, setJuste, [["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"]])}
+              <span className="count">1 = à côté · 5 = très juste</span>
+            </fieldset>
+            <fieldset>
+              <legend>Le recommanderiez-vous à un proche ?</legend>
+              {radios("reco", reco, setReco, [["oui", "Oui"], ["non", "Non"]])}
+            </fieldset>
+            <fieldset>
               <legend>L&apos;étape qui vous a le plus servi</legend>
               {radios("etape", etape, setEtape, [
                 ["lecture", "Lecture recruteur"],
@@ -724,7 +735,7 @@ function EtapeSynthese({ md, mode, code, notifier }: { md: string; mode: "exempl
               </label>
               <textarea id="manque" style={{ minHeight: 110 }} maxLength={2000} placeholder="Une phrase suffit." value={manque} onChange={(e) => setManque(e.target.value)} />
             </div>
-            <p className="muted">Seuls la note, l&apos;étape et ce commentaire sont enregistrés. Un nouvel envoi remplace le précédent.</p>
+            <p className="muted">Seules ces réponses et ce commentaire sont enregistrés, jamais votre CV. Un nouvel envoi remplace le précédent.</p>
             <div className="actions">
               <button className="btn primary" type="submit" disabled={encours}>
                 Envoyer mon retour

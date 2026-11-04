@@ -3,7 +3,7 @@
 import { lireCode, reserverAppel } from "@/lib/server/acces";
 import { OUTIL_RECHERCHE, appeler, json, sources, texte } from "@/lib/server/claude";
 import { corps, lireAnalyse, lireDossier } from "@/lib/server/entrees";
-import { reponseErreur } from "@/lib/server/erreurs";
+import { raison, reponseErreur } from "@/lib/server/erreurs";
 import { promptMarche, promptRecherche } from "@/lib/server/prompts";
 import { SCHEMA_MARCHE } from "@/lib/server/schemas";
 import { normMarche } from "@/lib/normalize";
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
         src = sources(m);
         notes = src.length ? texte(m) : null;
       } catch (e) {
-        console.error("Recherche de salaires indisponible :", e instanceof Error ? e.name : "inconnue");
+        console.error("Recherche de salaires indisponible :", raison(e));
       }
     }
 

@@ -5,6 +5,8 @@ import { useState } from "react";
 interface RetourAdmin {
   code: string;
   note: number;
+  juste?: number | null;
+  reco?: string;
   etape: string;
   manque: string;
   mode: string;
@@ -34,6 +36,11 @@ export default function Admin() {
   }
 
   const moy = data?.retours.length ? data.retours.reduce((s, r) => s + (Number(r.note) || 0), 0) / data.retours.length : null;
+  const justes = data?.retours.filter((r) => r.juste) ?? [];
+  const moyJuste = justes.length ? justes.reduce((s, r) => s + Number(r.juste), 0) / justes.length : null;
+  const recos = data?.retours.filter((r) => r.reco === "oui" || r.reco === "non") ?? [];
+  const recoOui = recos.filter((r) => r.reco === "oui").length;
+  const f1 = (n: number) => n.toLocaleString("fr-FR", { maximumFractionDigits: 1 });
 
   return (
     <div className="wrap admin">
@@ -84,7 +91,13 @@ export default function Admin() {
                 <strong>
                   {data.retours.length} retour{data.retours.length > 1 ? "s" : ""}
                 </strong>{" "}
-                · note moyenne {moy!.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} / 5
+                · utilité {f1(moy!)} / 5
+                {moyJuste != null && <> · justesse {f1(moyJuste)} / 5</>}
+                {recos.length > 0 && (
+                  <>
+                    {" "}· recommandé par {recoOui} sur {recos.length}
+                  </>
+                )}
               </p>
             ) : (
               <p className="muted">Aucun retour pour l&apos;instant.</p>
@@ -92,7 +105,7 @@ export default function Admin() {
             {data.retours.map((r) => (
               <div className="rv" key={r.code}>
                 <span className="meta">
-                  {r.code} · {r.note}/5 · {ETAPES[r.etape] ?? "étape non précisée"} · {r.mode === "exemple" ? "sur l'exemple" : "sur son dossier"} · v{r.version} ·{" "}
+                  {r.code} · utilité {r.note}/5{r.juste ? ` · justesse ${r.juste}/5` : ""}{r.reco ? ` · recommande : ${r.reco}` : ""} · {ETAPES[r.etape] ?? "étape non précisée"} · {r.mode === "exemple" ? "sur l'exemple" : "sur son dossier"} · v{r.version} ·{" "}
                   {new Date(r.envoyeLe).toLocaleString("fr-FR")}
                 </span>
                 {r.manque ? <p>{r.manque}</p> : <p className="muted">Sans commentaire.</p>}
