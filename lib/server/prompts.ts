@@ -39,7 +39,7 @@ export function promptLecture(d: Dossier): string {
 export function promptRecherche(d: Dossier, a: Analyse): string {
   return remplir(fichier("recherche-salaires"), {
     ZONE: d.zone || "Lyon",
-    NIVEAU: a.verdict,
+    NIVEAU: a.lecture30s || a.verdict,
     OFFRE: d.offre.slice(0, MAX_CHAMP),
   });
 }
