@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Analyse, Dossier, Marche } from "@/lib/types";
 import { SITUATIONS } from "@/lib/types";
+import { CAS_TEST } from "@/lib/cas-test";
 import { EX_ANALYSE, EX_DOSSIER, EX_MARCHE } from "@/lib/exemple";
 import { ErreurAppel, appelApi, codeMemorise, memoriserCode } from "@/lib/api";
 import { message } from "@/lib/messages";
@@ -125,6 +126,16 @@ export default function App() {
     setBusy(null);
     setStep("dossier");
   }
+  function chargerCas(dossier: Dossier) {
+    ctl.current?.abort();
+    setMode("direct");
+    setD(dossier);
+    setAnalyse(null);
+    setMarche(null);
+    setErr(null);
+    setBusy(null);
+    setStep("dossier");
+  }
   function monDossier() {
     ctl.current?.abort();
     setMode("direct");
@@ -229,6 +240,7 @@ export default function App() {
             onRestant={setRestant}
             onLancer={lancerAnalyse}
             onExemple={chargerExemple}
+            onCas={chargerCas}
             onParcourir={() => go("lecture")}
             erreur={errBox("dossier")}
             analyse={analyse}
@@ -399,6 +411,7 @@ function EtapeDossier(p: {
   onRestant: (n: number) => void;
   onLancer: () => void;
   onExemple: () => void;
+  onCas: (d: Dossier) => void;
   onParcourir: () => void;
   erreur: React.ReactNode;
   analyse: Analyse | null;
@@ -417,6 +430,27 @@ function EtapeDossier(p: {
         titre="Votre dossier"
         sous="Importez votre CV en PDF ou collez son texte, puis faites de même pour l'offre visée, ou donnez simplement le lien de l'offre."
       />
+      <div className="field cas">
+        <label className="lbl" htmlFor="cas">
+          Tester avec un profil fictif
+        </label>
+        <select
+          id="cas"
+          value=""
+          onChange={(e) => {
+            const c = CAS_TEST.find((x) => x.id === e.target.value);
+            if (c) p.onCas({ ...c.dossier });
+          }}
+        >
+          <option value="">Charger un cas de test…</option>
+          {CAS_TEST.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.titre}
+            </option>
+          ))}
+        </select>
+        <span className="muted cas-aide">Remplit le dossier avec un CV et une offre inventés. L&apos;analyse reste réelle et consomme votre code.</span>
+      </div>
       <div className="grid2">
         <ZoneTexte id="cv" lbl="CV" val={d.cv} set={champ("cv")} ph="Expériences, réalisations, formation, outils…" code={p.code} onRestant={p.onRestant} />
         <div className="stack">
