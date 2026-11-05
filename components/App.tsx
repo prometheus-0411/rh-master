@@ -318,7 +318,7 @@ export default function App() {
               </>
             ) : (
               <>
-                <VueNego m={marche} />
+                <VueNego m={marche} pretention={d.pretention} />
                 <div className="actions">
                   <button className="btn primary" type="button" onClick={() => go("synthese")}>
                     Voir la fiche de synthèse →

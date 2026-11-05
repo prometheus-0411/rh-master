@@ -26,6 +26,12 @@ export function fiche(mode: "exemple" | "direct", i: Dossier, a: Analyse | null,
     if (m.sources.length) L.push("**Sources**", ...m.sources.map((s) => `- [${s.titre}](${s.url})`), "");
     L.push(`Niveau perçu : ${m.niveauPercu}`, `Niveau visable : ${m.niveauVisable}`, "");
     L.push("## Négociation", "");
+    if (m.avisPretention) {
+      const niv = { sous_evaluee: "sous-évaluée", realiste: "réaliste", ambitieuse: "ambitieuse", hors_marche: "hors marché" }[m.avisPretention.niveau];
+      L.push(`**Votre prétention (${i.pretention} k€) :** ${niv}. ${m.avisPretention.message}`);
+      if (m.avisPretention.cible && m.avisPretention.niveau !== "realiste") L.push(`À viser maintenant : ${k(m.avisPretention.cible)}`);
+      L.push("");
+    }
     if (m.ancrage.montant) L.push(`**Ancrage :** ${k(m.ancrage.montant)} brut annuel. ${m.ancrage.justification}`, "");
     L.push("**Ordre des arguments**", ...m.arguments.map((x, n) => `${n + 1}. ${x}`), "");
     L.push("**À dire**", ...m.aDire.map((x) => `- ${x}`), "", "**À éviter**", ...m.aEviter.map((x) => `- ${x}`), "");

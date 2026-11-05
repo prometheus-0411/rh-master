@@ -59,6 +59,12 @@ export const EX_MARCHE: Marche = {
   niveauPercu: "BA junior en reconversion depuis le support : pas d'expérience BA formelle, 3 ans très proches du métier.",
   niveauVisable: "BA junior confirmé sous 18 mois, avec des livrables à montrer.",
   avantages: ["Jours de télétravail supplémentaires", "Certification BA financée", "Statut cadre", "Revue de salaire à 12 mois écrite dans l'offre"],
+  avisPretention: {
+    niveau: "realiste",
+    ecartPct: 0,
+    message: "40 k€ se situe dans le haut de la fourchette (35 à 42 k€) : défendable grâce aux 3 ans de connaissance applicative. Annoncez 41 k€ pour garder une marge.",
+    cible: null,
+  },
   ancrage: { montant: 41, justification: "Un peu au-dessus du médian : 3 ans de connaissance applicative réduisent le temps d'intégration." },
   arguments: [
     "Connaissance de la production : intégration rapide sur les sujets applicatifs",
