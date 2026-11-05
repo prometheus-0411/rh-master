@@ -34,6 +34,16 @@ export interface Source {
   url: string;
 }
 
+export type NiveauPretention = "sous_evaluee" | "realiste" | "ambitieuse" | "hors_marche";
+
+export interface AvisPretention {
+  niveau: NiveauPretention;
+  /** Écart en % : négatif sous le bas de la fourchette, positif au-dessus du haut, 0 dans la fourchette */
+  ecartPct: number;
+  message: string;
+  cible: number | null;
+}
+
 export interface Marche {
   poste: string;
   zone: string;
@@ -45,6 +55,8 @@ export interface Marche {
   niveauPercu: string;
   niveauVisable: string;
   avantages: string[];
+  /** Avis sur la prétention envisagée ; le niveau est recalculé à partir de la fourchette (normalize.ts). Absent sans prétention. */
+  avisPretention: AvisPretention | null;
   ancrage: { montant: number | null; justification: string };
   arguments: string[];
   aDire: string[];

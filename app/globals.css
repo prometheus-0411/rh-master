@@ -259,3 +259,5 @@ body { min-height: 100vh; }
 .badge.est { background: var(--warn-soft); color: var(--warn); }
 .badge.src { background: var(--good-soft); color: var(--good); }
 .admin table { min-width: 0; }
+.avis-pret { padding: 16px 18px; border-radius: var(--r); border: 1px solid var(--line); }
+.avis-tete { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }

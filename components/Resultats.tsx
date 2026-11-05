@@ -1,5 +1,5 @@
 // Affichage des étapes 2 à 4 (lecture recruteur, valeur marché, négociation), repris de la maquette MVP 0.1.
-import type { Analyse, Dossier, Marche } from "@/lib/types";
+import type { Analyse, AvisPretention, Dossier, Marche, NiveauPretention } from "@/lib/types";
 import { k } from "@/lib/fiche";
 import { Rich } from "./Rich";
 
@@ -238,9 +238,38 @@ export function VueMarche({ m, d }: { m: Marche; d: Dossier }) {
   );
 }
 
-export function VueNego({ m }: { m: Marche }) {
+const NIVEAUX_PRETENTION: Record<NiveauPretention, { txt: string; cls: string }> = {
+  sous_evaluee: { txt: "Sous-évaluée", cls: "moyen" },
+  realiste: { txt: "Réaliste", cls: "fort" },
+  ambitieuse: { txt: "Ambitieuse", cls: "moyen" },
+  hors_marche: { txt: "Hors marché", cls: "faible" },
+};
+
+function AvisSurPretention({ a, p }: { a: AvisPretention; p: number | null }) {
+  const n = NIVEAUX_PRETENTION[a.niveau];
+  const ecart =
+    a.ecartPct < 0 ? `${-a.ecartPct} % sous le bas de la fourchette` : a.ecartPct > 0 ? `${a.ecartPct} % au-dessus du haut de la fourchette` : "dans la fourchette";
+  return (
+    <section className="avis-pret stack" aria-label="Avis sur votre prétention">
+      <div className="avis-tete">
+        <span className="label">Votre prétention{p != null ? ` : ${k(p)}` : ""}</span>
+        <span className={`pill ${n.cls}`}>{n.txt}</span>
+        <span className="muted">{ecart}</span>
+      </div>
+      <Rich text={a.message} as="p" />
+      {a.cible != null && a.niveau !== "realiste" && (
+        <p>
+          <strong>À viser maintenant : {k(a.cible)}</strong>
+        </p>
+      )}
+    </section>
+  );
+}
+
+export function VueNego({ m, pretention = null }: { m: Marche; pretention?: number | null }) {
   return (
     <>
+      {m.avisPretention && <AvisSurPretention a={m.avisPretention} p={pretention} />}
       {m.ancrage.montant != null && (
         <div className="anchor">
           <div className="stack">

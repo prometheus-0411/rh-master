@@ -30,6 +30,11 @@ export const SCHEMA_MARCHE = objet({
   niveauPercu: texte,
   niveauVisable: texte,
   avantages: liste(texte),
+  avisPretention: objet({
+    niveau: { type: "string", enum: ["sous_evaluee", "realiste", "ambitieuse", "hors_marche", "non_communiquee"] },
+    message: texte,
+    cible: { type: "integer" },
+  }),
   ancrage: objet({ montant: { type: "integer" }, justification: texte }),
   arguments: liste(texte),
   aDire: liste(texte),

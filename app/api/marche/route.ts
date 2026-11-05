@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     }
 
     const msg = await appeler({ contenu: promptMarche(dossier, analyse, notes), schema: SCHEMA_MARCHE });
-    return Response.json({ marche: normMarche(json(msg), notes ? src : [], Boolean(notes)), restant: r.restant });
+    return Response.json({ marche: normMarche(json(msg), notes ? src : [], Boolean(notes), dossier.pretention), restant: r.restant });
   } catch (e) {
     await annuler?.().catch(() => {});
     return reponseErreur(e);
