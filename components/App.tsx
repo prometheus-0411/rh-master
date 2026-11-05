@@ -40,6 +40,15 @@ export default function App() {
   const [restant, setRestant] = useState<number | null>(null);
   const [toast, setToast] = useState("");
   const ctl = useRef<AbortController | null>(null);
+  // Accessibilité : à chaque changement d'étape ou fin d'analyse, le focus va au titre de l'étape (pas au premier affichage).
+  const premierRendu = useRef(true);
+  useEffect(() => {
+    if (premierRendu.current) {
+      premierRendu.current = false;
+      return;
+    }
+    document.querySelector<HTMLElement>("main h2")?.focus({ preventScroll: true });
+  }, [step, busy]);
 
   useEffect(() => {
     const c = codeMemorise();
@@ -53,7 +62,7 @@ export default function App() {
   }
   function go(s: Step) {
     setStep(s);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   }
 
   async function verifierCode(c: string, silencieux = false) {
@@ -194,7 +203,7 @@ export default function App() {
         </ol>
       </nav>
 
-      <div className="mode">
+      <section className="mode" aria-label="Accès à l'analyse">
         {mode === "exemple" ? (
           <>
             <p>
@@ -227,7 +236,7 @@ export default function App() {
             {errBox("acces")}
           </>
         )}
-      </div>
+      </section>
 
       <main>
         {step === "dossier" && (
@@ -325,9 +334,9 @@ export default function App() {
         )}
       </main>
 
-      <p className="foot">
+      <footer className="foot">
         RH Master structure et éclaire ; la décision reste la vôtre. Les fourchettes de salaire sont à vérifier sur des offres récentes.
-      </p>
+      </footer>
       {toast && (
         <div className="toast" role="status">
           {toast}
@@ -341,7 +350,7 @@ function Tete({ eyebrow, titre, sous }: { eyebrow: string; titre: string; sous?:
   return (
     <div className="panel-head">
       <span className="label">{eyebrow}</span>
-      <h2>{titre}</h2>
+      <h2 tabIndex={-1}>{titre}</h2>
       {sous && <p className="muted">{sous}</p>}
     </div>
   );
@@ -354,7 +363,7 @@ function Chargement({ titre, detail, onStop }: { titre: string; detail?: string;
     return () => clearInterval(t);
   }, []);
   return (
-    <div className="loading">
+    <div className="loading" role="status">
       <h3>{titre}</h3>
       <div className="bar" />
       <p className="muted">{detail ?? "Comptez 20 à 60 secondes."}</p>
@@ -418,6 +427,7 @@ function EtapeDossier(p: {
   marche: Marche | null;
 }) {
   const { d, setD } = p;
+  const [cas, setCas] = useState("");
   const champ = (cle: keyof Dossier) => (v: string) => setD((x) => ({ ...x, [cle]: v }));
   const nombre = (v: string) => (v.trim() === "" ? null : Number(v.replace(",", ".")) || null);
   const a = p.analyse;
@@ -434,22 +444,31 @@ function EtapeDossier(p: {
         <label className="lbl" htmlFor="cas">
           Tester avec un profil fictif
         </label>
-        <select
-          id="cas"
-          value=""
-          onChange={(e) => {
-            const c = CAS_TEST.find((x) => x.id === e.target.value);
-            if (c) p.onCas({ ...c.dossier });
-          }}
-        >
-          <option value="">Charger un cas de test…</option>
-          {CAS_TEST.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.titre}
-            </option>
-          ))}
-        </select>
-        <span className="muted cas-aide">Remplit le dossier avec un CV et une offre inventés. L&apos;analyse reste réelle et consomme votre code.</span>
+        <div className="cas-row">
+          <select id="cas" value={cas} onChange={(e) => setCas(e.target.value)}>
+            <option value="">Choisir un cas de test…</option>
+            {CAS_TEST.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.titre}
+              </option>
+            ))}
+          </select>
+          <button
+            className="btn"
+            type="button"
+            disabled={!cas}
+            onClick={() => {
+              const c = CAS_TEST.find((x) => x.id === cas);
+              if (c) p.onCas({ ...c.dossier });
+              setCas("");
+              // Le bouton se désactive : le focus passe au titre de l'étape pour ne pas être perdu.
+              document.querySelector<HTMLElement>("main h2")?.focus({ preventScroll: true });
+            }}
+          >
+            Charger
+          </button>
+        </div>
+        <span className="muted cas-aide">Remplace le dossier par un CV et une offre inventés. L&apos;analyse reste réelle et consomme votre code.</span>
       </div>
       <div className="grid2">
         <ZoneTexte id="cv" lbl="CV" val={d.cv} set={champ("cv")} ph="Expériences, réalisations, formation, outils…" code={p.code} onRestant={p.onRestant} />
@@ -727,7 +746,9 @@ function EtapeSynthese({ md, mode, code, notifier }: { md: string; mode: "exempl
   return (
     <section className="panel">
       <Tete eyebrow="Étape 5" titre="Synthèse et retour" sous="Votre fiche à garder, puis votre avis sur cette version test." />
-      <pre className="md">{md}</pre>
+      <pre className="md" tabIndex={0} role="region" aria-label="Aperçu de la fiche">
+        {md}
+      </pre>
       <div className="actions">
         <button className="btn primary" type="button" onClick={telecharger}>
           Télécharger la fiche (.md)
