@@ -109,6 +109,8 @@ textarea, input[type="number"], input[type="text"], select {
   width: 100%; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); padding: 10px 12px;
 }
 textarea { min-height: 220px; resize: vertical; font-size: .9rem; line-height: 1.5; }
+.cas { max-width: 460px; margin-bottom: 4px; }
+.cas-aide { font-size: .85rem; }
 .ctx { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 14px; }
 .count { font: .75rem var(--f-mono); color: var(--ink-soft); font-variant-numeric: tabular-nums; }
 .file { font-size: .82rem; color: var(--accent); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
