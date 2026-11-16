@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Métis — Lyon</title>
+
+  <!-- Leaflet (bibliothèque de carte), chargée depuis un CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #1b2430;
+    }
+    /* Bandeau en haut */
+    #bandeau {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      background: #1b2430;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 600;
+      z-index: 1000;
+      box-shadow: 0 2px 6px rgba(0,0,0,.3);
+    }
+    /* Carte : tout l'écran sous le bandeau */
+    #carte {
+      position: fixed;
+      top: 48px; left: 0; right: 0; bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <header id="bandeau">Métis — Lyon</header>
+  <div id="carte"></div>
+
+  <script>
+    // Carte centrée sur Lyon, zoom 12
+    const carte = L.map('carte').setView([45.764, 4.836], 12);
+
+    // Fond OpenStreetMap, avec l'attribution obligatoire
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">les contributeurs d’OpenStreetMap</a>'
+    }).addTo(carte);
+  </script>
+</body>
+</html>
